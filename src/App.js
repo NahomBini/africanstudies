@@ -4,14 +4,31 @@ import { SpotLight, Text, ScrollControls, Scroll, Html, useScroll } from '@react
 import { EffectComposer, Vignette } from '@react-three/postprocessing'
 import { TextureLoader, Vector3, Color } from 'three'
 
-// Inject Quicksand font
+// Inject Quicksand and Cormorant Garamond fonts
 if (typeof document !== 'undefined') {
   const link = document.createElement('link')
-  link.href = 'https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600&display=swap'
+  link.href = 'https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap'
   link.rel = 'stylesheet'
   document.head.appendChild(link)
 }
 
+// ─── AUDIO CONFIGURATION ────────────────────────────────────────────────────
+// Map sections to audio files - update these paths to your actual audio files
+const SECTION_AUDIO = {
+  invasion: '/audio/invasion.mp3',
+  rise: '/audio/rise.mp3',
+  clash: '/audio/clash.mp3', // unified
+  abandoned: '/audio/abandoned.mp3',
+  union: '/audio/union.mp3',
+}
+
+const AUDIO_START = {
+  invasion: 12,
+  rise: 100,
+  clash: 100,
+  abandoned: 20,
+  union: 14
+}
 // ─── STORY ARC ───────────────────────────────────────────────────────────────
 //  Opening quote (starts on dark blue)
 //  DIVIDER "The Italian Invasion"   → invasion images: light blue → dark blue
@@ -20,46 +37,76 @@ if (typeof document !== 'undefined') {
 //  DIVIDER "A Child Alone"          → abandoned: pure black
 //  DIVIDER "Reconciliation"         → union: soft flower purple (lavender/violet)
 
+// Quotes for each artwork - elegant and meaningful with golden serif styling
+const ART_QUOTES = {
+  // Act 1: Invasion
+  'The Crossing': '"He came to Ethiopia with the colonial campaign."',
+  'The March': '"He came to Ethiopia with the colonial campaign."',
+  'The Commander': '"My great-great-grandfather — I will call him the Commander — was an Italian military officer."',
+  'The Collapse': '"Adwa, for him, was a defeat. A complete collapse."',
+  
+  // Act 2: Rise
+  'The Proclamation': '"He put his word on the Virgin Mary, calling on everyone to support, to give everything they had."',
+  'The Myth': '"It was not just the warriors who fought. They believed Saint George was among them, guiding and protecting their every step."',
+  'Queen Tayitu': '"People on our side do not remember it as cruelty. They remember it as intelligence."',
+  'The Victory': '"He survived. That was the miracle my father always ended with. He came home."',
+  
+  // Act 3: Clash
+  'The Return': '"His grandson came back. That was my grandfather."',
+  'The Patriots': '"There were those who took to the bush rather than submit."',
+  'The Occupation': '"It was the atmosphere. The fear. The cruelty of the occupation."',
+  'The Stand': '"When mountains stand together, not even eagles can divide them."',
+  
+  // Act 4: Abandoned
+  'Left Behind': '"He was around ten, eleven years old. He was left in Ethiopia. He could not return to Italy. He was a child alone."',
+  
+  // Act 5: Union
+  'The Grace': '"You are not being cared for because your people deserved mercy. You are being cared for because you are a child."',
+  'The Acceptance': '"Yes. And I have sat with that. I am not Black by skin - I know that. But I am Black by heart. I was raised here."',
+  'Family': '"But they chose to see a child as a child before they chose to be political. That is the lesson I would want you to carry. Not just the victory. The humanity underneath it."'
+}
+
+// Updated GALLERY_ITEMS with corrected titles
 const GALLERY_ITEMS = [
   // ── DIVIDER 1 ─────────────────────────────────────────────────────────────
-  { section: 'divider', label: 'The Italian Invasion', sub: 'Colonial ambition, 1895', colorA: '#4a6fa8', colorB: '#2a4a90' },
+  { section: 'divider', label: 'The Italian Invasion: His Story', sub: 'Colonial ambition, 1895', colorA: '#4a6fa8', colorB: '#2a4a90' },
 
-  // ── ACT 1: INVASION (3 imgs) — light blue deepening to dark blue ──────────
-  { section: 'invasion', title: 'The Crossing',  imgPath: '/Occupazione_italiana_di_Adigrat_1895.jpg' },
-  { section: 'invasion', title: 'The March',     imgPath: '/panther.jpeg' },
+  // ── ACT 1: INVASION (3 imgs + collapse quote) — light blue deepening to dark blue ──────────
+  { section: 'invasion', title: 'The March',     imgPath: '/Occupazione_italiana_di_Adigrat_1895.jpg' },
   { section: 'invasion', title: 'The Commander', imgPath: '/comander.jpg' },
+  { section: 'invasion', title: 'The Collapse',  imgPath: '/collapse.webp' },
 
   // ── DIVIDER 2 ─────────────────────────────────────────────────────────────
-  { section: 'divider', label: 'Ethiopia Rises to Defend', sub: 'The Battle of Adwa, 1896', colorA: '#882222', colorB: '#882222' },
+  { section: 'divider', label: 'Ethiopia Rises to Defend: Her Story', sub: 'The Battle of Adwa, 1896', colorA: '#882222', colorB: '#882222' },
 
   // ── ACT 2: RISE (4 imgs) — light red deepening to dark red ───────────────
-  { section: 'rise', title: 'The Proclamation', imgPath: '/beauty_and_beast.jpeg' },
-  { section: 'rise', title: 'The Gathering',    imgPath: '/horse_sketch.jpeg' },
-  { section: 'rise', title: 'Queen Tayitu',     imgPath: '/kindness.jpeg' },
-  { section: 'rise', title: 'The Victory',      imgPath: '/crane.jpeg' },
+  { section: 'rise', title: 'The Proclamation', imgPath: '/minilik.jpg' },
+  { section: 'rise', title: 'The Myth',    imgPath: '/gathering.webp' },
+  { section: 'rise', title: 'Queen Tayitu',     imgPath: '/Empress-Taytu.jpg' },
+  { section: 'rise', title: 'The Victory',      imgPath: '/victory.jpg' },
 
   // ── DIVIDER 3 ─────────────────────────────────────────────────────────────
-  { section: 'divider', label: 'Italy Returns for Revenge', sub: 'Ethiopia resists again, 1935–1941', colorA: '#882222', colorB: '#3a5fa0' },
+  { section: 'divider', label: 'Italy Returns for Revenge: Conflict of Bloodlines', sub: 'Ethiopia resists again, 1935–1941', colorA: '#882222', colorB: '#3a5fa0' },
 
   // ── ACT 3: CLASH (4 imgs) — blue↔red alternating, purple midpoints ────────
-  { section: 'clash_blue', title: 'The Return',     imgPath: '/foxy.jpeg' },
-  { section: 'clash_red',  title: 'The Patriots',   imgPath: '/wonder.jpeg' },
-  { section: 'clash_blue', title: 'The Occupation', imgPath: '/forest.jpeg' },
-  { section: 'clash_red',  title: 'The Stand',      imgPath: '/lonely_together.jpeg' },
+  { section: 'clash_blue', title: 'The Return',     imgPath: '/return.jpg' },
+  { section: 'clash_red',  title: 'The Patriots',   imgPath: '/worriors.jpg' },
+  { section: 'clash_blue', title: 'The Occupation', imgPath: '/occupation.jpg' },
+  { section: 'clash_red',  title: 'The Stand',      imgPath: '/stand.jpg' },
 
   // ── DIVIDER 4 ─────────────────────────────────────────────────────────────
-  { section: 'divider', label: 'A Child Alone', sub: 'Neither side. Nowhere. Ethiopia, 1941', colorA: '#606060', colorB: '#303030' },
+  { section: 'divider', label: 'A Child Alone: His Grandfather', sub: 'Neither side. Nowhere. Ethiopia, 1941', colorA: '#606060', colorB: '#303030' },
 
   // ── ACT 4: ABANDONED (1 img) — pure black ────────────────────────────────
-  { section: 'abandoned', title: 'Left Behind', imgPath: '/lonely_together.jpeg' },
+  { section: 'abandoned', title: 'Left Behind', imgPath: '/alone.jpg' },
 
   // ── DIVIDER 5 ─────────────────────────────────────────────────────────────
   { section: 'divider', label: 'Reconciliation', sub: 'Two bloodlines, one family', colorA: '#5533aa', colorB: '#3d2288' },
 
   // ── ACT 5: UNION (3 imgs) — soft flower purple ────────────────────────────
-  { section: 'union', title: 'The Grace',      imgPath: '/sprited_away.jpeg' },
-  { section: 'union', title: 'The Acceptance', imgPath: '/beauty_and_beast.jpeg' },
-  { section: 'union', title: 'Family',         imgPath: '/paradise.jpeg' },
+  { section: 'union', title: 'The Grace',      imgPath: '/reconcilation.jpg' },
+  { section: 'union', title: 'The Acceptance', imgPath: '/dad.jpg' },
+  { section: 'union', title: 'Family',         imgPath: '/family.jpg' },
 ]
 
 // ─── LABEL COLORS ────────────────────────────────────────────────────────────
@@ -72,10 +119,12 @@ const LABEL_COLORS = {
   union:      '#5533aa',
 }
 
+// Golden color for quotes
+const QUOTE_COLOR = '#D4AF37' // Rich golden color
 
 // ─── LAYOUT ──────────────────────────────────────────────────────────────────
 const GAP           = 4
-const IMAGE_WIDTH   = 3
+const IMAGE_WIDTH   = 3.3
 const DIVIDER_WIDTH = 3
 
 function buildLayout(items) {
@@ -109,7 +158,7 @@ const IMAGE_BG_COLORS = {
   clash_blue: ['#020918', '#020918'],
   clash_red:  ['#250505', '#250505'],
   abandoned:  ['#000000'],
-  union:      ['#100520', '#3e0a40', '#321660'],
+  union:      ['#100520', '#3e0a40', '#3e0a40'],
 }
 
 function buildColorStops() {
@@ -170,7 +219,7 @@ function buildColorStops() {
 
   stops.sort((a, b) => a[0] - b[0])
   stops.unshift([0, '#122248'])
-  stops.push([1, '#321660'])
+  stops.push([1, '#640066'])
   return stops
 }
 
@@ -187,6 +236,147 @@ function sampleBg(t) {
   return new Color().lerpColors(new Color(lo[1]), new Color(hi[1]), Math.min(Math.max(f, 0), 1))
 }
 
+// ─── AUDIO MANAGER COMPONENT ─────────────────────────────────────────────────
+// ─── AUDIO MANAGER COMPONENT ─────────────────────────────────────────────────
+// ─── AUDIO MANAGER COMPONENT (Autoplay Policy Compliant) ───────────────────
+const AudioManager = () => {
+  const scroll = useScroll()
+  const [currentSection, setCurrentSection] = useState('invasion')
+  const audioRefs = useRef({})
+  const [userInteracted, setUserInteracted] = useState(false)
+
+  // 🔑 Treat blue/red as ONE logical section
+  const getLogicalSection = (section) => {
+    if (section === 'clash_blue' || section === 'clash_red') return 'clash'
+    return section
+  }
+
+  // INIT AUDIO
+  useEffect(() => {
+    const sections = ['invasion', 'rise', 'clash', 'abandoned', 'union']
+
+    sections.forEach(section => {
+      const src = SECTION_AUDIO[section]
+      if (!src) return
+
+      const audio = new Audio(src)
+      audio.loop = true
+      audio.volume = 0.5
+      audio.preload = 'auto'
+
+      audioRefs.current[section] = audio
+    })
+
+    return () => {
+      Object.values(audioRefs.current).forEach(audio => {
+        if (audio) {
+          audio.pause()
+          audio.src = ''
+        }
+      })
+    }
+  }, [])
+
+  // SCROLL DETECTION
+  useFrame(() => {
+    const scrollPos = scroll.offset * TOTAL_WIDTH
+
+    let detected = currentSection
+  let minDistance = Infinity
+
+  LAID_OUT.forEach(item => {
+    if (item.section !== 'divider') {
+      // 👇 shift trigger earlier (25% into image instead of center)
+      const triggerPoint = item.x + IMAGE_WIDTH * 0.25
+
+      const dist = Math.abs(scrollPos - triggerPoint)
+
+      if (dist < minDistance) {
+        minDistance = dist
+        detected = item.section
+      }
+    }
+  })
+
+    const logicalCurrent = getLogicalSection(currentSection)
+    const logicalNext = getLogicalSection(detected)
+
+    if (logicalNext !== logicalCurrent) {
+      // update section
+      setCurrentSection(detected)
+
+      // stop all audio
+      Object.values(audioRefs.current).forEach(a => a?.pause())
+
+      // play new section
+      const nextAudio = audioRefs.current[logicalNext]
+
+      if (nextAudio && userInteracted) {
+        nextAudio.currentTime = AUDIO_START[logicalNext] || 0
+        nextAudio.play().catch(() => {})
+      }
+    } else {
+      // same logical section → just update visuals
+      setCurrentSection(detected)
+    }
+  })
+
+  // USER INTERACTION (required for audio)
+  useEffect(() => {
+    const startAudio = () => {
+      if (userInteracted) return
+
+      setUserInteracted(true)
+
+      const logical = getLogicalSection(currentSection)
+      const current = audioRefs.current[logical]
+
+      if (current) {
+        current.currentTime = AUDIO_START[logical] || 0
+        current.play().catch(() => {})
+      }
+    }
+
+    window.addEventListener('click', startAudio)
+    window.addEventListener('keydown', startAudio)
+    window.addEventListener('touchstart', startAudio)
+
+    return () => {
+      window.removeEventListener('click', startAudio)
+      window.removeEventListener('keydown', startAudio)
+      window.removeEventListener('touchstart', startAudio)
+    }
+  }, [currentSection, userInteracted])
+
+  return (
+    <Html position={[10, -3, 0]}>
+      {!userInteracted && (
+        <button
+          style={{
+            padding: '10px 16px',
+            background: '#111',
+            color: 'white',
+            border: '1px solid #444',
+            cursor: 'pointer'
+          }}
+          onClick={() => {
+            setUserInteracted(true)
+
+            const logical = getLogicalSection(currentSection)
+            const current = audioRefs.current[logical]
+
+            if (current) {
+              current.currentTime = AUDIO_START[logical] || 0
+              current.play().catch(() => {})
+            }
+          }}
+        >
+          Enable Sound
+        </button>
+      )}
+    </Html>
+  )
+}
 // ─── SCROLL-DRIVEN BACKGROUND ────────────────────────────────────────────────
 const ScrollBackground = () => {
   const scroll = useScroll()
@@ -200,6 +390,7 @@ const WallArt = ({ item }) => {
   const { height: h } = useThree((s) => s.viewport)
   const texture    = useLoader(TextureLoader, item.imgPath)
   const labelColor = LABEL_COLORS[item.section] || '#aaaaaa'
+  const quote = ART_QUOTES[item.title] || '"..."'
 
   return (
     <group>
@@ -220,17 +411,34 @@ const WallArt = ({ item }) => {
         <meshStandardMaterial attach="material" map={texture} roughness={0.15} metalness={0.7} />
       </mesh>
 
-      {/* Title — pure 3D Text, no HTML lag */}
+      {/* Title — local serif font */}
       <Text
-        position={[item.x, -h / 4 - 0.22, 0.06]}
+        position={[item.x, -h / 4 - 0.35, 0.06]}
         anchorX="center"
         anchorY="middle"
-        scale={[1.1, 1.1, 1.1]}
+        scale={[1.3, 1.3, 1.3]}
         color={labelColor}
-        letterSpacing={0.12}
-        font="https://fonts.gstatic.com/s/quicksand/v31/6xK-dSZaM9iE8KbpRA_LJ3z8mH9BOJvgkBgv18G0wx9b.woff2"
+        letterSpacing={0.08}
+        font="/fonts/Serif.ttf"
       >
         {item.title}
+      </Text>
+
+      {/* Quote — local serif italic font, positioned below title */}
+      <Text
+        position={[item.x, -h / 4 - 0.65, 0.06]}
+        anchorX="center"
+        anchorY="end"
+        scale={[0.85, 0.85, 0.90]}
+        color={QUOTE_COLOR}
+        letterSpacing={0.04}
+        fontSize={0.15}
+        maxWidth={2.8}
+        textAlign="center"
+        lineHeight={1.7}
+        font="/fonts/Serif-Italic.ttf"
+      >
+        {quote}
       </Text>
     </group>
   )
@@ -312,26 +520,37 @@ const Scene = () => {
       <ScrollControls horizontal damping={20} pages={pages} distance={1}>
         <ScrollTracker onScrollChange={setScrolling} />
         <ScrollBackground />
+        <AudioManager />
         <Scroll>
           <Text
             position={[0, 0.5, 0]}
             anchorX="center"
             anchorY="bottom"
             scale={[textScale, textScale, textScale]}
-            color="#4a6fa8"
+            color="#C58b00"
             font="https://fonts.gstatic.com/s/sacramento/v5/buEzpo6gcdjy0EiZMBUG4C0f-w.woff"
           >
-            Creativity is allowing yourself to make mistakes.
+            "You carry both sides
           </Text>
           <Text
             position={[0, 0.3, 0]}
             anchorX="center"
             anchorY="top"
             scale={[textScale, textScale, textScale]}
-            color="#4a60a8"
+            color="#C58b00"
             font="https://fonts.gstatic.com/s/sacramento/v5/buEzpo6gcdjy0EiZMBUG4C0f-w.woff"
           >
-            Art is knowing which ones to keep.
+            You do not get the luxury of a simple story."
+          </Text>
+           <Text
+            position={[0, -0.5, 0]}
+            anchorX="center"
+            anchorY="top"
+            scale={[textScale, textScale, textScale]}
+            color="#ffffff"
+            font="https://fonts.gstatic.com/s/sacramento/v5/buEzpo6gcdjy0EiZMBUG4C0f-w.woff"
+          >
+            Click anywhere to start Audio, and Scroll to move 
           </Text>
           <Text
             position={[0, -0.72, 0]}
