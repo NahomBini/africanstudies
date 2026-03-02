@@ -1,0 +1,79 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* ─── Hide all default scrollbars globally ─────────────────────────────────── */
+* {
+  scrollbar-width: none; /* Firefox */
+}
+*::-webkit-scrollbar {
+  display: none; /* Chrome / Safari — hide everything by default */
+}
+
+/* ─── drei ScrollControls injects a <div> with overflow-x: scroll ───────────
+   Target it specifically so only the gallery scroll area gets our custom bar  */
+div[style*="overflow-x: scroll"],
+div[style*="overflow-x:scroll"] {
+  scrollbar-width: thin;                       /* Firefox */
+  scrollbar-color: rgba(255,255,255,0.18) transparent; /* Firefox thumb / track */
+}
+
+/* Chrome / Edge / Safari — the drei scroll container */
+div[style*="overflow-x: scroll"]::-webkit-scrollbar,
+div[style*="overflow-x:scroll"]::-webkit-scrollbar {
+  display: block;
+  height: 4px;
+  background: transparent;
+}
+
+div[style*="overflow-x: scroll"]::-webkit-scrollbar-track,
+div[style*="overflow-x:scroll"]::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+div[style*="overflow-x: scroll"]::-webkit-scrollbar-thumb,
+div[style*="overflow-x:scroll"]::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    90deg,
+    rgba(148, 166, 255, 0.0) 0%,
+    rgba(148, 166, 255, 0.9) 20%,
+    rgba(251, 169, 10,  1.0) 50%,
+    rgba(148, 166, 255, 0.9) 80%,
+    rgba(148, 166, 255, 0.0) 100%
+  );
+  border-radius: 100px;
+  box-shadow: 0 0 6px rgba(251, 169, 10, 0.6), 0 0 12px rgba(148, 166, 255, 0.3);
+}
+
+div[style*="overflow-x: scroll"]::-webkit-scrollbar-thumb:hover,
+div[style*="overflow-x:scroll"]::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    90deg,
+    rgba(148, 166, 255, 0.0) 0%,
+    rgba(148, 166, 255, 1.0) 20%,
+    rgba(251, 169, 10,  1.0) 50%,
+    rgba(148, 166, 255, 1.0) 80%,
+    rgba(148, 166, 255, 0.0) 100%
+  );
+  box-shadow: 0 0 10px rgba(251, 169, 10, 0.9), 0 0 20px rgba(148, 166, 255, 0.5);
+}
