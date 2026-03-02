@@ -26,7 +26,7 @@ const AUDIO_START = {
   invasion: 12,
   rise: 100,
   clash: 100,
-  abandoned: 25,
+  abandoned: 30,
   union: 14
 }
 // ─── STORY ARC ───────────────────────────────────────────────────────────────
