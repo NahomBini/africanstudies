@@ -27,7 +27,7 @@ const GALLERY_ITEMS = [
   // ── ACT 1: INVASION (3 imgs) — light blue deepening to dark blue ──────────
   { section: 'invasion', title: 'The Crossing',  imgPath: '/Occupazione_italiana_di_Adigrat_1895.jpg' },
   { section: 'invasion', title: 'The March',     imgPath: '/panther.jpeg' },
-  { section: 'invasion', title: 'The Commander', imgPath: '/comander.jpg' },
+  { section: 'invasion', title: 'The Commander', imgPath: '/panther.jpeg' },
 
   // ── DIVIDER 2 ─────────────────────────────────────────────────────────────
   { section: 'divider', label: 'Ethiopia Rises to Defend', sub: 'The Battle of Adwa, 1896', colorA: '#882222', colorB: '#882222' },
