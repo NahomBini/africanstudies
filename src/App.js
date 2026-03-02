@@ -25,7 +25,7 @@ const GALLERY_ITEMS = [
   { section: 'divider', label: 'The Italian Invasion', sub: 'Colonial ambition, 1895', colorA: '#4a6fa8', colorB: '#2a4a90' },
 
   // ── ACT 1: INVASION (3 imgs) — light blue deepening to dark blue ──────────
-  { section: 'invasion', title: 'The Crossing',  imgPath: '/owl.jpeg' },
+  { section: 'invasion', title: 'The Crossing',  imgPath: '/Occupazione_italiana_di_Adigrat_1895.jpg' },
   { section: 'invasion', title: 'The March',     imgPath: '/panther.jpeg' },
   { section: 'invasion', title: 'The Commander', imgPath: '/paradise.jpeg' },
 
